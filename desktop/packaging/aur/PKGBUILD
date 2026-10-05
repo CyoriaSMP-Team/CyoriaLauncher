@@ -1,0 +1,32 @@
+# Maintainer: FoxStudio <contact@foxstudio.dev>
+pkgname=voxelxlauncher-bin
+_appname=VoxelXLauncher
+_binname=voxelxlauncher
+pkgver=1.4.0
+pkgrel=1
+pkgdesc="VoxelXLauncher - Minecraft Launcher by FoxStudio"
+arch=('x86_64')
+url="https://github.com/foxstudio-201/VoxelXClient"
+license=('MIT')
+depends=('gtk3' 'nss' 'alsa-lib' 'libnotify')
+optdepends=('libappindicator-gtk3: tray icon support')
+provides=("${_binname}")
+conflicts=("${_binname}")
+options=('!strip' '!debug')
+source=("${_binname}-${pkgver}.deb::${url}/releases/download/v${pkgver}/${_binname}_${pkgver}_amd64.deb")
+# CI (publish-aur job) replaces this with the real checksum via `updpkgsums`.
+sha256sums=('bc262e79c4918a56aa47a93c381dae959363c3540379892ed003e594dbe9d821')
+
+package() {
+  # The release .deb already lays files out in FHS form (/opt + .desktop + icon
+  # with correct perms), so we just unpack its data archive into the package root.
+  bsdtar -xf "${_binname}-${pkgver}.deb" -C "${srcdir}"
+  bsdtar -xf "${srcdir}/data.tar.xz" -C "${pkgdir}"
+
+  # Electron's sandbox helper must be setuid root.
+  chmod 4755 "${pkgdir}/opt/${_appname}/chrome-sandbox"
+
+  # CLI launcher (the .deb ships no /usr/bin entry).
+  install -d "${pkgdir}/usr/bin"
+  ln -sf "/opt/${_appname}/${_binname}" "${pkgdir}/usr/bin/${_binname}"
+}

@@ -1,0 +1,17 @@
+# Desktop
+desktop/node_modules/
+desktop/dist/
+desktop/out/
+desktop/.vs/
+desktop/.env
+
+# Mobile / Gradle
+mobile/.gradle/
+mobile/**/build/
+mobile/local.properties
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
